@@ -610,9 +610,9 @@
     svg.setAttribute('aria-hidden', 'true');
     svg.setAttribute('width', rect.width);
     svg.setAttribute('height', rect.height);
-    svg.style.cssText = 'position:absolute;left:0;top:0;overflow:visible;pointer-events:none;filter:drop-shadow(0 1.5px 1px rgba(4,10,24,.6))';
+    svg.style.cssText = 'position:absolute;left:0;top:0;overflow:visible;pointer-events:none;filter:drop-shadow(0 1.2px .8px rgba(6,16,40,.7))';
     svg.innerHTML = '<defs><linearGradient id="sg' + uid + '" x1="0" y1="0" x2="0" y2="1">' +
-      '<stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="#f1f7fd"/><stop offset="1" stop-color="#aac3e2"/></linearGradient></defs>';
+      '<stop offset="0" stop-color="#ffffff"/><stop offset=".45" stop-color="#f4f9ff"/><stop offset=".8" stop-color="#cfe0f3"/><stop offset="1" stop-color="#9db9dd"/></linearGradient></defs>';
 
     /* 1) літери: позиція і висота кожної */
     var letters = [], walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null), range = document.createRange(), node;
@@ -674,7 +674,7 @@
         sg = run[q]; n = Math.max(3, Math.round((sg.xr - sg.xl) / (fs * 0.1)));
         for (j = n; j >= 0; j--) {
           t = j / n; x = sg.xl + (sg.xr - sg.xl) * t;
-          y = sg.yb + fs * (0.006 + 0.014 * R());
+          y = sg.yb + fs * (0.008 + 0.022 * Math.pow(Math.sin(Math.PI * t * (2 + 3 * R())), 2) + 0.006 * R());
           if (false) {
             var dl = fs * (0.07 + 0.13 * R()), dw = fs * 0.035;
             pts.push({ x: x + dw, y: y }); pts.push({ x: x, y: y + dl }); pts.push({ x: x - dw, y: y });
