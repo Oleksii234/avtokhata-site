@@ -84,7 +84,7 @@
   .top-phone:hover { color: var(--gold-hi); }
 
   /* ---------- Hero ---------- */
-  .hero { position: relative; overflow: hidden; padding: 24px 0 64px; }
+  .hero { position: relative; overflow: hidden; padding: 44px 0 64px; }
   /* золоті діагоналі з вивіски */
   .hero::before, .hero::after {
     content: ""; position: absolute; pointer-events: none; z-index: 0;
@@ -287,7 +287,7 @@
     body { padding-bottom: 0; }
     .dock { display: none; }
     .top { padding: 26px 0; }
-    .hero { padding: 32px 0 88px; }
+    .hero { padding: 60px 0 88px; }
     .hero::before { left: 20px; top: -120px; height: 420px; }
     .hero::after { left: 60px; top: -140px; height: 300px; }
     .shop { max-width: 460px; }
@@ -635,17 +635,17 @@
     var runs = [], cur = null;
     letters.forEach(function (L, idx) {
       var skip = R() < 0.2 && idx > 0 && idx < letters.length - 1;
-      var yb = L.top + fs * 0.06, segs = [], hr = R();
+      var yb = L.top + fs * 0.03, segs = [], hr = R();
       if (skip) { cur = null; return; }
       if (SPLIT.indexOf(L.ch) >= 0) {
-        segs.push({ xl: L.x, xr: L.x + L.w * 0.36, yb: yb, h: fs * (0.08 + 0.07 * hr) });
-        segs.push({ xl: L.x + L.w * 0.64, xr: L.x + L.w, yb: yb, h: fs * (0.08 + 0.07 * R()) });
+        segs.push({ xl: L.x, xr: L.x + L.w * 0.36, yb: yb, h: fs * (0.05 + 0.04 * hr) });
+        segs.push({ xl: L.x + L.w * 0.64, xr: L.x + L.w, yb: yb, h: fs * (0.05 + 0.04 * R()) });
       } else if (POINT.indexOf(L.ch) >= 0) {
-        segs.push({ xl: L.x + L.w * 0.28, xr: L.x + L.w * 0.72, yb: yb + fs * 0.02, h: fs * (0.1 + 0.07 * hr) });
+        segs.push({ xl: L.x + L.w * 0.28, xr: L.x + L.w * 0.72, yb: yb + fs * 0.01, h: fs * (0.05 + 0.04 * hr) });
       } else if (ROUND.indexOf(L.ch) >= 0) {
-        segs.push({ xl: L.x + L.w * 0.12, xr: L.x + L.w * 0.88, yb: yb, h: fs * (0.1 + 0.1 * hr) });
+        segs.push({ xl: L.x + L.w * 0.12, xr: L.x + L.w * 0.88, yb: yb, h: fs * (0.06 + 0.05 * hr) });
       } else {
-        segs.push({ xl: L.x + L.w * 0.01, xr: L.x + L.w * 0.99, yb: yb, h: fs * (0.14 + 0.16 * hr) });
+        segs.push({ xl: L.x + L.w * 0.01, xr: L.x + L.w * 0.99, yb: yb, h: fs * (0.08 + 0.07 * hr) });
       }
       segs.forEach(function (sg, si) {
         if (cur && (Math.abs(cur.yb - yb) > fs * 0.15 || sg.xl - cur.lastX > fs * 0.5)) cur = null;
@@ -674,8 +674,8 @@
         sg = run[q]; n = Math.max(3, Math.round((sg.xr - sg.xl) / (fs * 0.1)));
         for (j = n; j >= 0; j--) {
           t = j / n; x = sg.xl + (sg.xr - sg.xl) * t;
-          y = sg.yb + fs * (0.025 + 0.035 * R());
-          if (j > 0 && j < n && R() < 0.22) {
+          y = sg.yb + fs * (0.02 + 0.03 * R());
+          if (false) {
             var dl = fs * (0.07 + 0.13 * R()), dw = fs * 0.035;
             pts.push({ x: x + dw, y: y }); pts.push({ x: x, y: y + dl }); pts.push({ x: x - dw, y: y });
           } else { pts.push({ x: x, y: y }); }
@@ -746,11 +746,45 @@
     var li = document.querySelectorAll('.perks li');
     for (var q = 0; q < li.length; q++) if (q === 0 || q === 2) dust(li[q], li[q], 110 + q);   /* не на всіх: «трохи присипало» */
   }
+  /* новорічна шапка на першу літеру назви */
+  function santa(el) {
+    var old = el.querySelector('svg.santa');
+    if (old) old.parentNode.removeChild(old);
+    var cs = window.getComputedStyle(el), fs = parseFloat(cs.fontSize);
+    var ctx3 = document.createElement('canvas').getContext('2d');
+    ctx3.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+    if (typeof ctx3.measureText('A').actualBoundingBoxAscent !== 'number') return;
+    var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null), node = walker.nextNode();
+    if (!node || !node.nodeValue) return;
+    var rect = el.getBoundingClientRect(), range = document.createRange();
+    range.setStart(node, 0); range.setEnd(node, 1);
+    var r = range.getBoundingClientRect(), m = ctx3.measureText(node.nodeValue.charAt(0));
+    var top = r.top - rect.top + (m.fontBoundingBoxAscent || fs * 0.9) - m.actualBoundingBoxAscent;
+    var cx = r.left - rect.left + r.width * 0.5;
+    var NS = 'http://www.w3.org/2000/svg', svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('class', 'santa');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.setAttribute('width', rect.width);
+    svg.setAttribute('height', rect.height);
+    svg.style.cssText = 'position:absolute;left:0;top:0;overflow:visible;pointer-events:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.55))';
+    svg.innerHTML =
+      '<defs>' +
+      '<linearGradient id="hatR" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ef4638"/><stop offset="1" stop-color="#a5121b"/></linearGradient>' +
+      '<linearGradient id="hatF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#d7e2ef"/></linearGradient>' +
+      '<radialGradient id="hatP" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#d3deec"/></radialGradient>' +
+      '</defs>' +
+      '<g transform="translate(' + cx.toFixed(1) + ',' + (top + fs * 0.03).toFixed(1) + ') rotate(-9) scale(' + fs.toFixed(2) + ')">' +
+      '<path d="M -0.2,-0.05 C -0.2,-0.22 -0.08,-0.38 0.10,-0.40 C 0.22,-0.41 0.30,-0.34 0.32,-0.24 C 0.26,-0.28 0.21,-0.2 0.2,-0.05 Z" fill="url(#hatR)"/>' +
+      '<circle cx="0.32" cy="-0.22" r="0.06" fill="url(#hatP)"/>' +
+      '<rect x="-0.25" y="-0.095" width="0.5" height="0.11" rx="0.055" fill="url(#hatF)"/>' +
+      '</g>';
+    el.appendChild(svg);
+  }
   function allCaps() {
-    var hs = document.querySelectorAll('h1, h2.title');
+    var hs = document.querySelectorAll('h2.title');
     for (var q = 0; q < hs.length; q++) buildCaps(hs[q], q + 1);
   }
-  function allSnow() { allCaps(); allDust(); }
+  function allSnow() { allCaps(); allDust(); var t1 = document.querySelector('h1'); if (t1) santa(t1); }
   if (SNOWCAPS) {
     allSnow();
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(allSnow);
