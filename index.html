@@ -568,14 +568,14 @@
       flakes = [];
       for (var k = 0; k < n; k++) {
         var r = 1 + Math.random() * 2.2;
-        flakes.push({ x: Math.random() * sw, y: Math.random() * sh, r: r, v: 0.35 + r * 0.28, a: Math.random() * 6.28, o: 0.45 + Math.random() * 0.4 });
+        flakes.push({ x: Math.random() * sw, y: Math.random() * sh, r: r, v: 0.17 + r * 0.13, a: Math.random() * 6.28, o: 0.45 + Math.random() * 0.4 });
       }
     }
     function snowTick() {
       cx.clearRect(0, 0, sw, sh);
       for (var k = 0; k < flakes.length; k++) {
         var f = flakes[k];
-        f.a += 0.012; f.x += Math.sin(f.a) * 0.35; f.y += f.v;
+        f.a += 0.006; f.x += Math.sin(f.a) * 0.18; f.y += f.v;
         if (f.y > sh + 6) { f.y = -6; f.x = Math.random() * sw; }
         cx.fillStyle = 'rgba(255,255,255,' + f.o + ')';
         cx.beginPath(); cx.arc(f.x, f.y, f.r, 0, 6.2832); cx.fill();
