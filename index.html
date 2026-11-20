@@ -700,7 +700,8 @@
     function mid(a, b) { return f((a.x + b.x) / 2) + ',' + f((a.y + b.y) / 2); }
     var rad = parseFloat(cs.borderTopLeftRadius) || 0;
     var x0 = rad * 0.6 + 8, x1 = w - rad * 0.6 - 8, span = x1 - x0;
-    var H0 = 3.5 + Math.min(6.5, w * 0.012);
+    var big = uid === 103 ? 1.7 : 1;            /* на світлій карті сніг має бути помітніший */
+    var H0 = (3.5 + Math.min(6.5, w * 0.012)) * big;
     var own = host === el;
     var NS = 'http://www.w3.org/2000/svg';
     var svg = document.createElementNS(NS, 'svg');
@@ -711,7 +712,7 @@
     svg.setAttribute('height', 20);
     svg.style.cssText = 'position:absolute;overflow:visible;pointer-events:none;filter:drop-shadow(0 1px .8px rgba(4,10,24,.55));' +
       'left:' + (own ? -(parseFloat(cs.borderLeftWidth) || 0) : el.offsetLeft) + 'px;' +
-      'top:' + (own ? -(parseFloat(cs.borderTopWidth) || 0) : el.offsetTop) + 'px';
+      'top:' + ((own ? -(parseFloat(cs.borderTopWidth) || 0) : el.offsetTop) - (big > 1 ? 1.5 : 0)) + 'px';
     var html = '<defs><linearGradient id="sd' + uid + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/>' +
       '<stop offset=".6" stop-color="#eef5fc"/><stop offset="1" stop-color="#b4cbe6"/></linearGradient></defs>';
     var k = 1 + (R() < 0.55 ? 1 : 0) + (w > 480 && R() < 0.5 ? 1 : 0);
@@ -725,7 +726,7 @@
         pts.push({ x: sx + len * t, y: y });
       }
       for (j = n; j >= 0; j--) {
-        t = j / n; y = 0.9 + 1.0 * R();
+        t = j / n; y = (0.9 + 1.0 * R()) * big;
         if (j > 0 && j < n && R() < 0.25) {
           var dl = 3 + 5 * R();
           pts.push({ x: sx + len * t + 1.6, y: y }); pts.push({ x: sx + len * t, y: y + dl }); pts.push({ x: sx + len * t - 1.6, y: y });
