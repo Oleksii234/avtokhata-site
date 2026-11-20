@@ -111,6 +111,13 @@
     background: linear-gradient(180deg, var(--gold-hi) 0%, var(--gold) 45%, var(--gold-lo) 100%);
     -webkit-background-clip: text; background-clip: text; color: transparent;
   }
+  /* снігова «шапка» на верхівках літер (зимова прикраса, див. також скрипт зі снігом) */
+  h1 { position: relative; }
+  h1::after {
+    content: attr(data-text); position: absolute; left: 0; top: 0; white-space: nowrap; pointer-events: none;
+    background: linear-gradient(180deg, transparent 0, transparent 6%, #fff 10%, #E6F0FA 22%, rgba(230,240,250,0) 31%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
   .tagline { margin: 16px 0 0; font-size: clamp(1.25rem, 4.5vw, 1.65rem); font-weight: 650; line-height: 1.25; max-width: 24ch; }
   .lead { margin: 16px 0 0; max-width: 46ch; color: var(--muted); }
 
@@ -324,7 +331,7 @@
   <section class="hero">
     <div class="wrap">
       <div class="hero-text">
-        <h1><span class="a">Авто</span><span class="b">Хата</span></h1>
+        <h1 data-text="АвтоХата"><span class="a">Авто</span><span class="b">Хата</span></h1>
         <p class="tagline">Нові автозапчастини в Житомирі</p>
         <p class="lead">Запчастини для європейських та азійських авто: в наявності та під замовлення. Напишіть або зателефонуйте — скажемо, чи є потрібна деталь і скільки вона коштує.</p>
 
@@ -540,6 +547,47 @@
     });
     dlg.addEventListener('click', function (e) {
       if (e.target === dlg || (e.target.closest && e.target.closest('[data-close]'))) dlg.close();
+    });
+  }
+
+  /* ---------- Сніг (зимова прикраса). Щоб вимкнути, змініть true на false ---------- */
+  var SNOW = true;
+  var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (SNOW && !calm) {
+    var cv = document.createElement('canvas');
+    cv.setAttribute('aria-hidden', 'true');
+    cv.style.cssText = 'position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:5';
+    document.body.appendChild(cv);
+    var cx = cv.getContext('2d'), sw = 0, sh = 0, dpr = Math.min(window.devicePixelRatio || 1, 2), flakes = [], raf = 0;
+
+    function snowSize() {
+      sw = window.innerWidth; sh = window.innerHeight;
+      cv.width = sw * dpr; cv.height = sh * dpr;
+      cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var n = Math.round(Math.min(80, Math.max(28, sw * sh / 17000)));
+      flakes = [];
+      for (var k = 0; k < n; k++) {
+        var r = 1 + Math.random() * 2.2;
+        flakes.push({ x: Math.random() * sw, y: Math.random() * sh, r: r, v: 0.35 + r * 0.28, a: Math.random() * 6.28, o: 0.45 + Math.random() * 0.4 });
+      }
+    }
+    function snowTick() {
+      cx.clearRect(0, 0, sw, sh);
+      for (var k = 0; k < flakes.length; k++) {
+        var f = flakes[k];
+        f.a += 0.012; f.x += Math.sin(f.a) * 0.35; f.y += f.v;
+        if (f.y > sh + 6) { f.y = -6; f.x = Math.random() * sw; }
+        cx.fillStyle = 'rgba(255,255,255,' + f.o + ')';
+        cx.beginPath(); cx.arc(f.x, f.y, f.r, 0, 6.2832); cx.fill();
+      }
+      raf = window.requestAnimationFrame(snowTick);
+    }
+    snowSize();
+    snowTick();
+    window.addEventListener('resize', snowSize);
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) { window.cancelAnimationFrame(raf); raf = 0; }
+      else if (!raf) { snowTick(); }
     });
   }
 
