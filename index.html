@@ -283,7 +283,7 @@
     .hero { padding: 32px 0 88px; }
     .hero::before { left: 20px; top: -120px; height: 420px; }
     .hero::after { left: 60px; top: -140px; height: 300px; }
-    .hero .wrap { grid-template-columns: 1.1fr .9fr; gap: 64px; align-items: center; }
+    .shop { max-width: 460px; }
     .actions { grid-template-columns: auto auto auto; justify-content: start; }
     .ask { grid-template-columns: .9fr 1.1fr; gap: 56px; align-items: start; }
     .slip { padding: 30px 28px 26px; }
@@ -297,6 +297,9 @@
   }
 
   @media (min-width: 1000px) {
+    .hero .wrap { grid-template-columns: 1.1fr .9fr; gap: 64px; align-items: center; }
+    h1 { font-size: min(7.2rem, 8.5vw); }
+    .shop { max-width: none; }
     .perks { grid-template-columns: repeat(4, 1fr); gap: 18px; }
     .perks li { font-size: 1.05rem; padding: 18px 16px 20px; }
   }
