@@ -169,6 +169,7 @@
 
   /* Бланк запиту */
   .slip {
+    position: relative;
     background: var(--panel);
     border: 1.5px solid var(--gold-lo);
     border-radius: 8px;
@@ -210,6 +211,7 @@
 
   .perks { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
   .perks li {
+    position: relative;
     background: var(--panel); border: 1.5px solid var(--line); border-top: 3px solid var(--gold);
     border-radius: 10px; padding: 20px 20px 22px;
     font-size: 1.15rem; font-weight: 650; line-height: 1.35;
@@ -232,7 +234,7 @@
   .hours tr.today th, .hours tr.today td { background: var(--panel-2); font-weight: 800; color: var(--gold-hi); }
   .hours tr.today th { border-left: 5px solid var(--gold); padding-left: 7px; }
   .hours-note { margin: 8px 0 0; color: var(--muted); font-size: .93rem; }
-  .map { margin-top: 22px; }
+  .map { margin-top: 22px; position: relative; }
   .map iframe { display: block; width: 100%; height: 340px; border: 0; border-radius: 10px; background: var(--panel-2); }
   .map-links { display: grid; gap: 12px; margin-top: 16px; }
 
@@ -686,16 +688,75 @@
     svg.insertAdjacentHTML('beforeend', html);
     el.appendChild(svg);
   }
+  /* легка «присипка» снігом по верхньому краю блоків (фото, бланк, картки, карта) */
+  function dust(el, host, uid) {
+    var olds = host.querySelectorAll('svg.dust'), z;
+    for (z = 0; z < olds.length; z++) if (olds[z].getAttribute('data-uid') === String(uid)) olds[z].parentNode.removeChild(olds[z]);
+    var cs = window.getComputedStyle(el), w = el.offsetWidth;
+    if (!w) return;
+    var seed = uid * 7919 + 1013;
+    function R() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+    function f(v) { return Math.round(v * 10) / 10; }
+    function mid(a, b) { return f((a.x + b.x) / 2) + ',' + f((a.y + b.y) / 2); }
+    var rad = parseFloat(cs.borderTopLeftRadius) || 0;
+    var x0 = rad * 0.6 + 8, x1 = w - rad * 0.6 - 8, span = x1 - x0;
+    var H0 = 3.5 + Math.min(6.5, w * 0.012);
+    var own = host === el;
+    var NS = 'http://www.w3.org/2000/svg';
+    var svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('class', 'dust');
+    svg.setAttribute('data-uid', uid);
+    svg.setAttribute('aria-hidden', 'true');
+    svg.setAttribute('width', w);
+    svg.setAttribute('height', 20);
+    svg.style.cssText = 'position:absolute;overflow:visible;pointer-events:none;filter:drop-shadow(0 1px .8px rgba(4,10,24,.55));' +
+      'left:' + (own ? -(parseFloat(cs.borderLeftWidth) || 0) : el.offsetLeft) + 'px;' +
+      'top:' + (own ? -(parseFloat(cs.borderTopWidth) || 0) : el.offsetTop) + 'px';
+    var html = '<defs><linearGradient id="sd' + uid + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/>' +
+      '<stop offset=".6" stop-color="#eef5fc"/><stop offset="1" stop-color="#b4cbe6"/></linearGradient></defs>';
+    var k = 1 + (R() < 0.55 ? 1 : 0) + (w > 480 && R() < 0.5 ? 1 : 0);
+    for (var i = 0; i < k; i++) {
+      var cell = span / k, sx = x0 + cell * i + cell * 0.12 * R(), len = cell * (0.4 + 0.42 * R());
+      var H = H0 * (0.7 + 0.6 * R()), n = Math.max(4, Math.round(len / 9)), pts = [], j, t, y;
+      for (j = 0; j <= n; j++) {
+        t = j / n;
+        y = -H * Math.pow(Math.sin(Math.PI * t), 0.8) * (0.8 + 0.4 * R());
+        if (j === 0 || j === n) y = 0.4;
+        pts.push({ x: sx + len * t, y: y });
+      }
+      for (j = n; j >= 0; j--) {
+        t = j / n; y = 1.6 + 1.8 * R();
+        if (j > 0 && j < n && R() < 0.25) {
+          var dl = 3 + 5 * R();
+          pts.push({ x: sx + len * t + 1.6, y: y }); pts.push({ x: sx + len * t, y: y + dl }); pts.push({ x: sx + len * t - 1.6, y: y });
+        } else { pts.push({ x: sx + len * t, y: y }); }
+      }
+      var d = 'M' + mid(pts[pts.length - 1], pts[0]);
+      for (var u = 0; u < pts.length; u++) d += ' Q' + f(pts[u].x) + ',' + f(pts[u].y) + ' ' + mid(pts[u], pts[(u + 1) % pts.length]);
+      html += '<path d="' + d + 'Z" fill="url(#sd' + uid + ')"/>';
+    }
+    svg.innerHTML = html;
+    host.appendChild(svg);
+  }
+  function allDust() {
+    var img = document.querySelector('.shop img'), slip = document.querySelector('.slip'), mapf = document.querySelector('.map iframe');
+    if (img) dust(img, img.parentNode, 101);
+    if (slip) dust(slip, slip, 102);
+    if (mapf) dust(mapf, mapf.parentNode, 103);
+    var li = document.querySelectorAll('.perks li');
+    for (var q = 0; q < li.length; q++) if (q === 0 || q === 2) dust(li[q], li[q], 110 + q);   /* не на всіх: «трохи присипало» */
+  }
   function allCaps() {
     var hs = document.querySelectorAll('h1, h2.title');
     for (var q = 0; q < hs.length; q++) buildCaps(hs[q], q + 1);
   }
+  function allSnow() { allCaps(); allDust(); }
   if (SNOWCAPS) {
-    allCaps();
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(allCaps);
-    window.addEventListener('load', allCaps);
+    allSnow();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(allSnow);
+    window.addEventListener('load', allSnow);
     var capsTimer = 0;
-    window.addEventListener('resize', function () { window.clearTimeout(capsTimer); capsTimer = window.setTimeout(allCaps, 150); });
+    window.addEventListener('resize', function () { window.clearTimeout(capsTimer); capsTimer = window.setTimeout(allSnow, 150); });
   }
 
   /* ---------- Копіювання шаблону повідомлення ---------- */
