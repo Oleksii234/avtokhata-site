@@ -133,8 +133,9 @@
     border-radius: 10px; border: 2px solid transparent;
     font: inherit; font-weight: 750; font-size: 1.05rem; text-decoration: none; cursor: pointer;
     transition: background-color .15s, color .15s, border-color .15s;
+    position: relative;
   }
-  .btn svg { width: 22px; height: 22px; flex: none; }
+  .btn svg:not(.dust) { width: 22px; height: 22px; flex: none; }
   .btn-call { background: linear-gradient(180deg, var(--gold-hi), var(--gold) 55%, var(--gold-lo)); color: #1A1305; }
   .btn-call:hover { background: var(--gold-hi); }
   .btn-chat { background: var(--panel-2); color: var(--text); border-color: var(--silver); }
@@ -216,6 +217,8 @@
     border-radius: 10px; padding: 20px 20px 22px;
     font-size: 1.15rem; font-weight: 650; line-height: 1.35;
   }
+  .perks li strong { display: block; font-weight: 750; }
+  .perks li span { display: block; margin-top: 8px; font-size: .98rem; font-weight: 500; line-height: 1.45; color: var(--muted); }
   .perks li::before {
     content: ""; display: block; width: 34px; height: 34px; margin-bottom: 14px; border-radius: 50%;
     background:
@@ -295,7 +298,9 @@
     .ask { grid-template-columns: .9fr 1.1fr; gap: 56px; align-items: start; }
     .slip { padding: 30px 28px 26px; }
     .two { grid-template-columns: 1fr 1fr; gap: 28px; }
-    .perks { grid-template-columns: repeat(2, 1fr); gap: 22px; }
+    .perks { grid-template-columns: repeat(2, 1fr); gap: 18px; }
+    .perks li:first-child { grid-column: 1 / -1; }
+    .perks li:first-child span { max-width: 52ch; }
     .loc { display: grid; grid-template-columns: .9fr 1.1fr; gap: 48px; align-items: start; }
     .map { margin-top: 0; }
     .map iframe { height: 420px; }
@@ -307,8 +312,8 @@
     .hero .wrap { grid-template-columns: 1.1fr .9fr; gap: 64px; align-items: center; }
     h1 { font-size: min(7.2rem, 8.5vw); }
     .shop { max-width: none; }
-    .perks { grid-template-columns: repeat(4, 1fr); gap: 18px; }
-    .perks li { font-size: 1.05rem; padding: 18px 16px 20px; }
+    .perks { gap: 22px; }
+    .perks li { font-size: 1.15rem; padding: 22px 22px 24px; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -395,12 +400,11 @@
     <div class="wrap">
       <h2 class="title" id="stock-title">Що в нас є</h2>
       <ul class="perks">
-        <li>Нові запчастини для європейських, азійських та інших автомобілів</li>
-        <li>Є в наявності, а якщо потрібної деталі немає, привеземо під замовлення</li>
-        <li>Розрахунок готівкою або на картку</li>
-        <li>Відправляємо Новою поштою та Укрпоштою по Україні. Доставка платна</li>
+        <li><strong>Автозапчастини</strong><span>В наявності та під замовлення: привеземо від кількох годин до наступного дня. Для європейських, азійських та інших авто.</span></li>
+        <li><strong>Автомасла та автохімія</strong></li>
+        <li><strong>Автотовари та аксесуари</strong></li>
       </ul>
-      <p class="except"><strong>Не продаємо:</strong> газове обладнання (ГБО), болти та гайки, а також запчастини до китайських і американських авто.</p>
+      <p class="fineprint">Зручна оплата: готівкою або карткою. Відправляємо Новою поштою та Укрпоштою по Україні, доставка платна.</p>
       <p class="callout">Не впевнені, чи є ваша деталь? <strong>Напишіть або зателефонуйте, перевіримо.</strong></p>
     </div>
   </section>
@@ -465,8 +469,7 @@
     <ul class="numlist">
       <li><a class="num" href="tel:+380972509513"><span>+380 97 250 95 13</span><small>Viber</small></a></li>
       <li><a class="num" href="tel:+380639896484"><span>+380 63 989 64 84</span><small>Telegram</small></a></li>
-      <!-- ТРЕТІЙ НОМЕР. Щоб увімкнути: впишіть номер (у href без пробілів) і видаліть позначки коментаря біля рядка нижче. -->
-      <!-- <li><a class="num" href="tel:+380XXXXXXXXX"><span>+380 XX XXX XX XX</span></a></li> -->
+      <li><a class="num" href="tel:+380963504069"><span>+380 96 350 40 69</span></a></li>
     </ul>
   </div>
 </dialog>
@@ -743,6 +746,8 @@
     if (img) dust(img, img.parentNode, 101);
     if (slip) dust(slip, slip, 102);
     if (mapf) dust(mapf, mapf.parentNode, 103);
+    var bt = [document.querySelector('.actions .btn-call'), document.querySelector('.map-links .btn-call'), document.getElementById('copy-btn')];
+    for (var b = 0; b < bt.length; b++) if (bt[b]) dust(bt[b], bt[b], 120 + b);   /* присипка лише на деяких кнопках */
     var li = document.querySelectorAll('.perks li');
     for (var q = 0; q < li.length; q++) if (q === 0 || q === 2) dust(li[q], li[q], 110 + q);   /* не на всіх: «трохи присипало» */
   }
@@ -784,7 +789,7 @@
     var hs = document.querySelectorAll('h2.title');
     for (var q = 0; q < hs.length; q++) buildCaps(hs[q], q + 1);
   }
-  function allSnow() { allCaps(); allDust(); var t1 = document.querySelector('h1'); if (t1) santa(t1); }
+  function allSnow() { allDust(); var t1 = document.querySelector('h1'); if (t1) santa(t1); }
   if (SNOWCAPS) {
     allSnow();
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(allSnow);
