@@ -90,7 +90,9 @@
   /* ---------- Шапка ---------- */
   .top { padding: 18px 0; }
   .top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-  .brand { font-weight: 800; font-size: 1.15rem; letter-spacing: -0.01em; text-decoration: none; }
+  .brand { font-weight: 800; font-size: 1.15rem; letter-spacing: -0.01em; text-decoration: none;
+           display: inline-flex; align-items: center; gap: 10px; }
+  .brand img { width: 40px; height: 40px; border-radius: 50%; box-shadow: 0 0 0 1px rgba(255,255,255,.12); }
   .top-phone { font-weight: 700; text-decoration: none; white-space: nowrap; color: var(--gold); }
   .top-phone:hover { color: var(--gold-hi); }
 
@@ -338,7 +340,7 @@
 
 <header class="top">
   <div class="wrap">
-    <a class="brand" href="#">АвтоХата</a>
+    <a class="brand" href="#"><img src="/logo-96.png" alt="" width="40" height="40">АвтоХата</a>
     <a class="top-phone" href="tel:+380972509513">+380 97 250 95 13</a>
   </div>
 </header>
